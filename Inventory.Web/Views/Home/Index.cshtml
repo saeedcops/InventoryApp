@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Dashboard</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-4">
+            <h4 >Items in store</h4>
+
+            <h4>
+                @Html.Raw(ViewBag.Store)
+
+            </h4>
+        </div>
+
+        <div class="col-4">
+            <h4 >Items Sold</h4>
+
+            <h4>
+                @Html.Raw(ViewBag.Sold)
+
+            </h4>
+        </div>
+
+        <div class="col-4">
+            <h4 >Items Borrowed</h4>
+
+            <h4>
+                @Html.Raw(ViewBag.Borrow)
+
+            </h4>
+        </div>
+    </div>
+
+
+    
+</div>

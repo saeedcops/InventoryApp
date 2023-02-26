@@ -1,0 +1,89 @@
+﻿@model IEnumerable<Inventory.Core.Entity.Item>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Items</h1>
+
+<p>
+    <a class="btn btn-outline-success" asp-action="Create">Create New Item</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StoredDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BorrowedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SoldDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Borrower)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Buyer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StoredDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BorrowedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SoldDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Borrower.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Buyer.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.Name)
+            </td>
+            <td>
+                    <a class="btn btn-outline-warning" asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+                    <a class="btn btn-outline-info" asp-action="Details" asp-route-id="@item.Id">Details</a> 
+                    <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
