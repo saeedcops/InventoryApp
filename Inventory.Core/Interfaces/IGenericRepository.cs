@@ -1,10 +1,5 @@
 ﻿using Inventory.Core.Entity;
-using Inventory.Core.Specification;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Inventory.Core.Interfaces
 {
@@ -15,7 +10,9 @@ namespace Inventory.Core.Interfaces
         Task<T> UpdateAsync(T T);
         Task<T> AddAsync(T T);
         Task<IReadOnlyList<T>> GetAllAsync();
-        Task<IReadOnlyList<T>> GetAllSpecAsync(ISpecification<T> spec);
+        Task<IReadOnlyList<Item>> GetAllItemAsync();
+        Task<IReadOnlyList<T>> GetAllByStatusAsync(int status);
+        Task<IReadOnlyList<T>> GetAllSearchAsync(string search);
 
     }
 }

@@ -9,21 +9,18 @@ using Inventory.Core.Entity;
 using Inventory.Core.Interfaces;
 using NToastNotify;
 using ClosedXML.Excel;
-using Microsoft.AspNetCore.Http;
-using IronXL;
 
 namespace Inventory.Web.Controllers
 {
     public class ReportesController : Controller
     {
-        private readonly IItemRepository _itemRepository;
-
+        private readonly IGenericRepository<Item> _itemRepository;
         private readonly IToastNotification toastNotification;
         private static int _lastReport = -1;
-        public ReportesController(IItemRepository itemRepository, IToastNotification toastNotification)
+        public ReportesController(IGenericRepository<Item> itemRepository, IToastNotification toastNotification)
         {
-            _itemRepository = itemRepository;
             this.toastNotification = toastNotification;
+            _itemRepository = itemRepository;
         }
         [HttpGet("DownloadReport")]
         public async Task< IActionResult> DownloadReport()
@@ -35,7 +32,7 @@ namespace Inventory.Web.Controllers
             }
             else
             {
-                var items = await _itemRepository.GetItemListAsync(_lastReport);
+                var items = await _itemRepository.GetAllByStatusAsync(_lastReport);
                 if(items == null || items.Count == 0)
                 {
                     toastNotification.AddErrorToastMessage("No items to generate a report");
@@ -89,7 +86,6 @@ namespace Inventory.Web.Controllers
                     "Report.xlsx"
                     );
             }
-            //return View("Index", items);
         }
 
         public async Task<IActionResult> SoldReport()
@@ -98,7 +94,7 @@ namespace Inventory.Web.Controllers
 
             ViewData["Name"] = "Sold";
 
-            return View("Index", await _itemRepository.GetItemListAsync(2));
+            return View("Index", await _itemRepository.GetAllByStatusAsync(2));
         }
 
         public async Task<IActionResult> StoreReport()
@@ -106,14 +102,14 @@ namespace Inventory.Web.Controllers
             _lastReport = 0;
             ViewData["Name"] = "In Store";
 
-            return View("Index", await _itemRepository.GetItemListAsync(0));
+            return View("Index", await _itemRepository.GetAllByStatusAsync(0));
         }
 
         public async Task<IActionResult> BorrowReport()
         {
             _lastReport = 1;
             ViewData["Name"] = "Borrowed";
-            return View("Index", await _itemRepository.GetItemListAsync(1));
+            return View("Index", await _itemRepository.GetAllByStatusAsync(1));
         }
 
 

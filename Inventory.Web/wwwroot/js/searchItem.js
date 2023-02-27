@@ -38,7 +38,7 @@ searchText.addEventListener('keyup', (e) => {
                             item.brand + '</td><td>' + item.description + '</td><td>' + item.price + '</td><td>' +
                             item.storedDate + '</td><td>' + item.borrowedDate + '</td><td>' + item.soldDate + '</td><td>' +
                             item.status + '</td><td>' + item.borrower + '</td><td>' +
-                            item.buyer + '</td><td>' + item.category.name + '</td></tr>';
+                            item.buyer + '</td><td>' + item.category + '</td></tr>';
 
                     });
 

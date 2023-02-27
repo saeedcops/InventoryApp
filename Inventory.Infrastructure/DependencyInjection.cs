@@ -5,11 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Inventory.Infrastructure
 {
@@ -18,7 +13,6 @@ namespace Inventory.Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection serviceDescriptors, IConfiguration conf)
         {
 
-          serviceDescriptors.AddScoped<IItemRepository, ItemRepository>();
           serviceDescriptors.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             serviceDescriptors.AddDbContext<ApplicationDbContext>(x =>

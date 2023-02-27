@@ -15,35 +15,28 @@ namespace Inventory.Web.Controllers
 {
     public class ItemsController : Controller
     {
-        private readonly IItemRepository _iTemRepository;
+        private readonly IGenericRepository<Item> _itemRepository;
         private readonly IGenericRepository<Category> _categoryRepository;
         private readonly IGenericRepository<Customer> _customerRepository;
         private readonly IGenericRepository<Employee> _employeeRepository;
         private readonly IToastNotification toastNotification;
 
-        public ItemsController(IItemRepository iTemRepository, IGenericRepository<Category> categoryRepository, IGenericRepository<Customer> customerRepository, IGenericRepository<Employee> employeeRepository, IToastNotification toastNotification)
+        public ItemsController( IGenericRepository<Category> categoryRepository, IGenericRepository<Customer> customerRepository, IGenericRepository<Employee> employeeRepository, IToastNotification toastNotification, IGenericRepository<Item> itemRepository)
         {
-            _iTemRepository = iTemRepository;
             _categoryRepository = categoryRepository;
             _customerRepository = customerRepository;
             _employeeRepository = employeeRepository;
             this.toastNotification = toastNotification;
+            _itemRepository = itemRepository;
         }
 
         // GET: Items
         public async Task<IActionResult> Index()
         {
-            var items =await _iTemRepository.GetItemListAsync();
+            var items =await _itemRepository.GetAllItemAsync();
             return View(items);
         }
 
-        [HttpGet("search")]
-        public async Task<ActionResult<List<Item>>> SearchItems(string search)
-        {
-            var items = await _iTemRepository.GetItemListAsync();
-            return Ok( items);
-        }
-        // GET: Items/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -51,7 +44,7 @@ namespace Inventory.Web.Controllers
                 return NotFound();
             }
 
-            var item = await _iTemRepository.GetItemByIdAsync((int)id);
+            var item = await _itemRepository.GetByIdAsync((int)id);
 
             if (item == null)
             {
@@ -79,7 +72,7 @@ namespace Inventory.Web.Controllers
                 Price=item.Price,Description=item.Description,
                 Category=item.Category,CategoryId=item.CategoryId };
 
-            await _iTemRepository.AddItemAsync(itemToAdd);
+            await _itemRepository.AddAsync(itemToAdd);
             toastNotification.AddSuccessToastMessage("Item added successfully!");
             return RedirectToAction(nameof(Index));
 
@@ -93,7 +86,7 @@ namespace Inventory.Web.Controllers
                 return NotFound();
             }
 
-            var item = await _iTemRepository.GetItemByIdAsync((int)id);
+            var item = await _itemRepository.GetByIdAsync((int)id);
             if (item == null)
             {
                 return NotFound();
@@ -114,7 +107,7 @@ namespace Inventory.Web.Controllers
             {
                 return NotFound();
             }
-            await _iTemRepository.UpdateItemAsync(item);
+            await _itemRepository.UpdateAsync(item);
 
             toastNotification.AddSuccessToastMessage("Item updated successfully!");
             return RedirectToAction(nameof(Index));
@@ -128,7 +121,7 @@ namespace Inventory.Web.Controllers
                 return NotFound();
             }
 
-            var item = await _iTemRepository.GetItemByIdAsync((int)id);
+            var item = await _itemRepository.GetByIdAsync((int)id);
             if (item == null)
             {
                 return NotFound();
@@ -143,7 +136,7 @@ namespace Inventory.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
            
-            var item = await _iTemRepository.DeleteItemByIdAsync((int)id);
+            var item = await _itemRepository.DeleteById((int)id);
             toastNotification.AddSuccessToastMessage("Item deleted successfully!");
 
             return RedirectToAction(nameof(Index));
