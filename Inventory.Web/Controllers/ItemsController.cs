@@ -9,23 +9,25 @@ using Inventory.Core.Entity;
 using Inventory.Web.Dtos;
 using Inventory.Core.Interfaces;
 using Inventory.Infrastructure.Data;
+using NToastNotify;
 
 namespace Inventory.Web.Controllers
 {
     public class ItemsController : Controller
     {
-        private readonly IITemRepository _iTemRepository;
+        private readonly IItemRepository _iTemRepository;
         private readonly IGenericRepository<Category> _categoryRepository;
         private readonly IGenericRepository<Customer> _customerRepository;
         private readonly IGenericRepository<Employee> _employeeRepository;
+        private readonly IToastNotification toastNotification;
 
-
-        public ItemsController(IITemRepository iTemRepository, IGenericRepository<Category> categoryRepository, IGenericRepository<Customer> customerRepository, IGenericRepository<Employee> employeeRepository)
+        public ItemsController(IItemRepository iTemRepository, IGenericRepository<Category> categoryRepository, IGenericRepository<Customer> customerRepository, IGenericRepository<Employee> employeeRepository, IToastNotification toastNotification)
         {
             _iTemRepository = iTemRepository;
             _categoryRepository = categoryRepository;
             _customerRepository = customerRepository;
             _employeeRepository = employeeRepository;
+            this.toastNotification = toastNotification;
         }
 
         // GET: Items
@@ -35,6 +37,12 @@ namespace Inventory.Web.Controllers
             return View(items);
         }
 
+        [HttpGet("search")]
+        public async Task<ActionResult<List<Item>>> SearchItems(string search)
+        {
+            var items = await _iTemRepository.GetItemListAsync();
+            return Ok( items);
+        }
         // GET: Items/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -72,11 +80,9 @@ namespace Inventory.Web.Controllers
                 Category=item.Category,CategoryId=item.CategoryId };
 
             await _iTemRepository.AddItemAsync(itemToAdd);
+            toastNotification.AddSuccessToastMessage("Item added successfully!");
             return RedirectToAction(nameof(Index));
 
-            //var categories = _categoryRepository.GetAllAsync();
-            //ViewData["CategoryId"] = new SelectList(categories.Result, "Id", "Name");
-            //return View(item);
         }
 
         // GET: Items/Edit/5
@@ -110,14 +116,8 @@ namespace Inventory.Web.Controllers
             }
             await _iTemRepository.UpdateItemAsync(item);
 
-
+            toastNotification.AddSuccessToastMessage("Item updated successfully!");
             return RedirectToAction(nameof(Index));
-            //ViewData["Status"] = new SelectList(new[] { Status.SOLD, Status.BORROW, Status.STORE }, item.Status);
-            //var categories = _categoryRepository.GetAllAsync();
-            //ViewData["CategoryId"] = new SelectList(categories.Result, "Id", "Name");
-            //ViewData["BorrowerID"] = new SelectList(_employeeRepository.GetAllAsync().Result, "Id", "Name", item.BorrowerID);
-            //ViewData["BuyerId"] = new SelectList(_customerRepository.GetAllAsync().Result, "Id", "Name", item.BuyerId);
-            //return View(item);
         }
 
         // GET: Items/Delete/5
@@ -144,7 +144,7 @@ namespace Inventory.Web.Controllers
         {
            
             var item = await _iTemRepository.DeleteItemByIdAsync((int)id);
-
+            toastNotification.AddSuccessToastMessage("Item deleted successfully!");
 
             return RedirectToAction(nameof(Index));
         }

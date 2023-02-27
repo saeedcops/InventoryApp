@@ -8,10 +8,10 @@ namespace Inventory.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IITemRepository _iTemRepository;
+        private readonly IItemRepository _iTemRepository;
 
 
-        public HomeController(IITemRepository iTemRepository)
+        public HomeController(IItemRepository iTemRepository)
         {
             _iTemRepository = iTemRepository;
         }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Inventory.Core.Interfaces
 {
-    public interface IITemRepository
+    public interface IItemRepository
     {
         Task<Item> AddItemAsync(Item item);
         Task<Item> UpdateItemAsync(Item item);
@@ -15,6 +15,7 @@ namespace Inventory.Core.Interfaces
         Task<Item> GetItemByIdAsync(int id);
         Task<IReadOnlyList<Item>> GetItemListAsync();
         Task<IReadOnlyList<Item>> GetItemListAsync(int status);
+        Task<IReadOnlyList<Item>> GetItemBySearchAsync(string search);
 
     }
 }

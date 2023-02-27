@@ -4,8 +4,16 @@
     ViewData["Title"] = "Index";
 }
 
+<div class="row d-flex justify-content-between">
 
-<h1> @Html.Raw(ViewBag.Name) Reports</h1>
+    <div class="col-10">
+        <h1> @Html.Raw(ViewBag.Name) Reports</h1>
+    </div>
+    <div class="col-2">
+        <a class="btn btn-outline-primary" asp-action="DownloadReport">Download report</a>
+    </div>
+</div>
+
 
 <table class="table">
     <thead>

@@ -1,18 +1,19 @@
 using Inventory.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using NToastNotify;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddInfrastructure(builder.Configuration);
-//Add services to the container.
-//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//    options.UseSqlServer(connectionString));
-//builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddMvc().AddNToastNotifyToastr(new NToastNotify.ToastrOptions()
+{
+    ProgressBar = true,
+    PositionClass = ToastPositions.TopRight,
+    CloseButton = true,
+    PreventDuplicates = true,
+});
 
-//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-//    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllersWithViews();
 

@@ -15,5 +15,7 @@ namespace Inventory.Core.Interfaces
         Task<T> UpdateAsync(T T);
         Task<T> AddAsync(T T);
         Task<IReadOnlyList<T>> GetAllAsync();
+        Task<IReadOnlyList<T>> GetAllSpecAsync(ISpecification<T> spec);
+
     }
 }

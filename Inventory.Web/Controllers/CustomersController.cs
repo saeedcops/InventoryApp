@@ -1,32 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Inventory.Core.Entity;
-using Inventory.Infrastructure.Data;
 using Inventory.Core.Interfaces;
+using NToastNotify;
 
 namespace Inventory.Web.Controllers
 {
     public class CustomersController : Controller
     {
         private readonly IGenericRepository<Customer> _repository;
-
-        public CustomersController(IGenericRepository<Customer> repository)
+        private readonly IToastNotification toastNotification;
+        public CustomersController(IGenericRepository<Customer> repository, IToastNotification toastNotification)
         {
             _repository = repository;
+            this.toastNotification = toastNotification;
         }
 
-        // GET: Categories
         public async Task<IActionResult> Index()
         {
             return View(await _repository.GetAllAsync());
         }
 
-        // GET: Categories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,7 +37,6 @@ namespace Inventory.Web.Controllers
             return View(category);
         }
 
-        // GET: Categories/Create
         public IActionResult Create()
         {
             return View();
@@ -56,13 +49,12 @@ namespace Inventory.Web.Controllers
             if (ModelState.IsValid)
             {
                 await _repository.AddAsync(customer);
-
+                toastNotification.AddSuccessToastMessage("Customer added successfully!");
                 return RedirectToAction(nameof(Index));
             }
             return View(customer);
         }
 
-        // GET: Categories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -78,9 +70,6 @@ namespace Inventory.Web.Controllers
             return View(category);
         }
 
-        // POST: Categories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Name,Id")] Customer customer)
@@ -94,13 +83,12 @@ namespace Inventory.Web.Controllers
             {
 
                 await _repository.UpdateAsync(customer);
-
+                toastNotification.AddSuccessToastMessage("Customer updated successfully!");
                 return RedirectToAction(nameof(Index));
             }
             return View(customer);
         }
 
-        // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -117,13 +105,13 @@ namespace Inventory.Web.Controllers
             return View(category);
         }
 
-        // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
 
             await _repository.DeleteById(id);
+            toastNotification.AddSuccessToastMessage("Customer deleted successfully!");
             return RedirectToAction(nameof(Index));
         }
     }

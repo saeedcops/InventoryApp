@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inventory.Infrastructure.Implementation
 {
-    public class ItemRepository : IITemRepository
+    public class ItemRepository : IItemRepository
     {
         private readonly ApplicationDbContext _dbContext;
 
@@ -38,6 +38,16 @@ namespace Inventory.Infrastructure.Implementation
                 .Include(x=>x.Category).FirstOrDefaultAsync(x => x.Id == id);
             return item;
 
+        }
+
+        public async Task<IReadOnlyList<Item>> GetItemBySearchAsync(string search)
+        {
+            var item = await _dbContext.Items
+                .Include(x => x.Buyer)
+                .Include(x => x.Borrower)
+                .Include(x => x.Category)
+                .Where(x => x.Name.StartsWith(search) || x.Brand.StartsWith(search) || x.Description.StartsWith(search)).ToListAsync();
+            return item;
         }
 
         public async Task<IReadOnlyList<Item>> GetItemListAsync()

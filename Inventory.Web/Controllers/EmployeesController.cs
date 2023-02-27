@@ -8,25 +8,25 @@ using Microsoft.EntityFrameworkCore;
 using Inventory.Core.Entity;
 using Inventory.Infrastructure.Data;
 using Inventory.Core.Interfaces;
+using NToastNotify;
 
 namespace Inventory.Web.Controllers
 {
     public class EmployeesController : Controller
     {
         private readonly IGenericRepository<Employee> _repository;
-
-        public EmployeesController(IGenericRepository<Employee> repository)
+        private readonly IToastNotification toastNotification;
+        public EmployeesController(IGenericRepository<Employee> repository, IToastNotification toastNotification)
         {
             _repository = repository;
+            this.toastNotification = toastNotification;
         }
 
-        // GET: Categories
         public async Task<IActionResult> Index()
         {
             return View(await _repository.GetAllAsync());
         }
 
-        // GET: Categories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,7 +43,6 @@ namespace Inventory.Web.Controllers
             return View(employee);
         }
 
-        // GET: Categories/Create
         public IActionResult Create()
         {
             return View();
@@ -56,13 +55,12 @@ namespace Inventory.Web.Controllers
             if (ModelState.IsValid)
             {
                 await _repository.AddAsync(employee);
-
+                toastNotification.AddSuccessToastMessage("Employee added successfully!");
                 return RedirectToAction(nameof(Index));
             }
             return View(employee);
         }
 
-        // GET: Categories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -78,9 +76,6 @@ namespace Inventory.Web.Controllers
             return View(employee);
         }
 
-        // POST: Categories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Name,Id")] Employee employee)
@@ -94,13 +89,12 @@ namespace Inventory.Web.Controllers
             {
 
                 await _repository.UpdateAsync(employee);
-
+                toastNotification.AddSuccessToastMessage("Employee updated successfully!");
                 return RedirectToAction(nameof(Index));
             }
             return View(employee);
         }
 
-        // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -117,13 +111,12 @@ namespace Inventory.Web.Controllers
             return View(employee);
         }
 
-        // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-
             await _repository.DeleteById(id);
+            toastNotification.AddSuccessToastMessage("Employee deleted successfully!");
             return RedirectToAction(nameof(Index));
         }
     }

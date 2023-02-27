@@ -6,43 +6,114 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Inventory.Core.Entity;
-using Inventory.Infrastructure.Data;
 using Inventory.Core.Interfaces;
+using NToastNotify;
+using ClosedXML.Excel;
+using Microsoft.AspNetCore.Http;
+using IronXL;
 
 namespace Inventory.Web.Controllers
 {
     public class ReportesController : Controller
     {
-        private readonly IITemRepository _itemRepository;
+        private readonly IItemRepository _itemRepository;
 
-        public ReportesController(IITemRepository itemRepository)
+        private readonly IToastNotification toastNotification;
+        private static int _lastReport = -1;
+        public ReportesController(IItemRepository itemRepository, IToastNotification toastNotification)
         {
             _itemRepository = itemRepository;
+            this.toastNotification = toastNotification;
+        }
+        [HttpGet("DownloadReport")]
+        public async Task< IActionResult> DownloadReport()
+        {
+            if (_lastReport == -1)
+            {
+                toastNotification.AddErrorToastMessage("No items to generate a report");
+                return View("Index");
+            }
+            else
+            {
+                var items = await _itemRepository.GetItemListAsync(_lastReport);
+                if(items == null || items.Count == 0)
+                {
+                    toastNotification.AddErrorToastMessage("No items to generate a report");
+                    return View("Index",items);
+                }
+
+            
+
+                using var workbook = new XLWorkbook();
+
+                var workSheet = workbook.Worksheets.Add("Reports");
+
+                var curRow = 1;
+                workSheet.Cell("A1").Value = "Name";
+                workSheet.Cell("B1").Value = "Brand";
+                workSheet.Cell("C1").Value = "Description";
+                workSheet.Cell("D1").Value = "Price";
+                workSheet.Cell("E1").Value = "StoredDate";
+                workSheet.Cell("F1").Value = "BorrowedDate";
+                workSheet.Cell("G1").Value = "SoldDate";
+                workSheet.Cell("H1").Value = "Status";
+                workSheet.Cell("I1").Value = "Borrower";
+                workSheet.Cell("J1").Value = "Buyer";
+                workSheet.Cell("K1").Value = "Category";
+
+                foreach (var item in items)
+                {
+                    curRow++;
+                    workSheet.Cell("A" + curRow).Value = item.Name;
+                    workSheet.Cell("B" + curRow).Value = item.Brand;
+                    workSheet.Cell("C" + curRow).Value = item.Description;
+                    workSheet.Cell("D" + curRow).Value = item.Price;
+                    workSheet.Cell("E2" + curRow).Value = item.StoredDate;
+                    workSheet.Cell("F2" + curRow).Value = item.BorrowedDate;
+                    workSheet.Cell("G2" + curRow).Value = item.SoldDate;
+                    workSheet.Cell("H2" + curRow).Value = item.Status;
+                    workSheet.Cell("I2" + curRow).Value = item.Borrower;
+                    workSheet.Cell("J2" + curRow).Value = item.Buyer;
+                    workSheet.Cell("K2" + curRow).Value = item.Category;
+                }
+
+                using var stream = new MemoryStream();
+
+                workbook.SaveAs(stream);
+
+                var content = stream.ToArray();
+                //workbook.SaveAs("Report.xlsx");
+                return File(
+                    content,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "Report.xlsx"
+                    );
+            }
+            //return View("Index", items);
         }
 
-
-        // GET: Reportes
         public async Task<IActionResult> SoldReport()
         {
-            var data = await _itemRepository.GetItemListAsync(2);
+            _lastReport = 2;
+
             ViewData["Name"] = "Sold";
 
-            return View("Index",data);
+            return View("Index", await _itemRepository.GetItemListAsync(2));
         }
 
         public async Task<IActionResult> StoreReport()
         {
-            var data = await _itemRepository.GetItemListAsync(0);
+            _lastReport = 0;
             ViewData["Name"] = "In Store";
 
-            return View("Index", data);
+            return View("Index", await _itemRepository.GetItemListAsync(0));
         }
 
         public async Task<IActionResult> BorrowReport()
         {
-            var data = await _itemRepository.GetItemListAsync(1);
+            _lastReport = 1;
             ViewData["Name"] = "Borrowed";
-            return View("Index", data);
+            return View("Index", await _itemRepository.GetItemListAsync(1));
         }
 
 

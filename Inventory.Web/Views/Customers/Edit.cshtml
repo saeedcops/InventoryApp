@@ -18,16 +18,15 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
+            <div class="form-group m-2 d-flex justify-content-between">
                 <input type="submit" value="Save" class="btn btn-primary" />
+                <a class="btn btn-warning" asp-action="Index">Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a class="btn btn-warning" asp-action="Index">Back to List</a>
-</div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

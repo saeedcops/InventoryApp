@@ -18,7 +18,7 @@ namespace Inventory.Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection serviceDescriptors, IConfiguration conf)
         {
 
-          serviceDescriptors.AddScoped<IITemRepository, ItemRepository>();
+          serviceDescriptors.AddScoped<IItemRepository, ItemRepository>();
           serviceDescriptors.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             serviceDescriptors.AddDbContext<ApplicationDbContext>(x =>
