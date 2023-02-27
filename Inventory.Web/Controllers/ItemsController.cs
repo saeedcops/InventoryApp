@@ -7,6 +7,8 @@ using Inventory.Core.Interfaces;
 using Inventory.Infrastructure.Data;
 using NToastNotify;
 using Inventory.Web.ViewModel;
+using System.Text.RegularExpressions;
+using Inventory.Web.Filter;
 
 namespace Inventory.Web.Controllers
 {
@@ -51,7 +53,6 @@ namespace Inventory.Web.Controllers
             return View(item);
         }
 
-        // GET: Items/Create
         public IActionResult Create()
         {
 
@@ -59,26 +60,82 @@ namespace Inventory.Web.Controllers
             return View();
         }
 
-        // POST: Items/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ItemViewModel item)
         {
+            ViewData["CategoryId"] = new SelectList(_categoryRepository.GetAllAsync().Result, "Id", "Name");
+
             var itemToAdd = new Item {
                 Name = item.Name,Brand=item.Brand,
                 Price=item.Price,Description=item.Description,
                 Category=item.Category,CategoryId=item.CategoryId };
+
+            if (!InputFilter.ItemCreateFilter(item))
+            {
+                toastNotification.AddErrorToastMessage("Please dont enter specail char");
+                return View();
+            }
 
             await _itemRepository.AddAsync(itemToAdd);
             toastNotification.AddSuccessToastMessage("Item added successfully!");
             return RedirectToAction(nameof(Index));
 
         }
+      
 
-        // GET: Items/Edit/5
+        public async Task<IActionResult> TakeOut()
+        {
+         
+            ViewData["Status"] = new SelectList(new[] { Status.SOLD, Status.BORROW });
+            ViewData["Category"] = new SelectList(_categoryRepository.GetAllAsync().Result, "Id", "Name");
+            ViewData["Employee"] = new SelectList(_employeeRepository.GetAllAsync().Result, "Id", "Name");
+            ViewData["Customer"] = new SelectList(_customerRepository.GetAllAsync().Result, "Id", "Name");
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> TakeOut(TakeOutParams item,int? category,int? customer,int? employee)
+        {
+            ViewData["Status"] = new SelectList(new[] { Status.SOLD, Status.BORROW });
+            ViewData["Category"] = new SelectList(_categoryRepository.GetAllAsync().Result, "Id", "Name");
+            ViewData["Employee"] = new SelectList(_employeeRepository.GetAllAsync().Result, "Id", "Name");
+            ViewData["Customer"] = new SelectList(_customerRepository.GetAllAsync().Result, "Id", "Name");
+
+            if (!InputFilter.TakeOutFilter(item) && item != null)
+            {
+                item.Category = new Category();
+                item.Customer = new Customer();
+                item.Employee = new Employee();
+
+                item.Category.Id =(int) category;
+                item.Customer.Id =(int) customer;
+                item.Employee.Id =(int) employee;
+                var result = await _itemRepository.TakeOut(item);
+
+                if(result)
+                    toastNotification.AddSuccessToastMessage("Item updated successfully!");
+                else
+                {
+
+                 toastNotification.AddAlertToastMessage("No enough items in a store");
+                    
+                    return View();
+
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            toastNotification.AddErrorToastMessage("Something went wrong!");
+
+            return View(item);
+        }
+
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null )
+            if (id == null)
             {
                 return NotFound();
             }
@@ -88,29 +145,43 @@ namespace Inventory.Web.Controllers
             {
                 return NotFound();
             }
-            ViewData["Status"] = new SelectList(new[] {Status.SOLD,Status.BORROW,Status.STORE}, item.Status);
+
+            ViewData["Status"] = new SelectList(new[] { Status.SOLD, Status.BORROW, Status.STORE }, item.Status);
             var categories = _categoryRepository.GetAllAsync();
             ViewData["CategoryId"] = new SelectList(categories.Result, "Id", "Name");
             ViewData["BorrowerID"] = new SelectList(_employeeRepository.GetAllAsync().Result, "Id", "Name", item.BorrowerID);
             ViewData["BuyerId"] = new SelectList(_customerRepository.GetAllAsync().Result, "Id", "Name", item.BuyerId);
             return View(item);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Item item)
         {
+            ViewData["Status"] = new SelectList(new[] { Status.SOLD, Status.BORROW, Status.STORE }, item.Status);
+            var categories = _categoryRepository.GetAllAsync();
+            ViewData["CategoryId"] = new SelectList(categories.Result, "Id", "Name");
+            ViewData["BorrowerID"] = new SelectList(_employeeRepository.GetAllAsync().Result, "Id", "Name", item.BorrowerID);
+            ViewData["BuyerId"] = new SelectList(_customerRepository.GetAllAsync().Result, "Id", "Name", item.BuyerId);
+
             if (id != item.Id)
             {
                 return NotFound();
             }
+            
+            if(!InputFilter.ItemCreateFilter(item)) 
+            {
+                toastNotification.AddErrorToastMessage("Something went wrong with validations!");
+
+                return View();
+            }
+            
             await _itemRepository.UpdateAsync(item);
-
             toastNotification.AddSuccessToastMessage("Item updated successfully!");
-            return RedirectToAction(nameof(Index));
-        }
 
-        // GET: Items/Delete/5
+            return RedirectToAction(nameof(Index));
+            
+        }
+       
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null )
@@ -127,7 +198,6 @@ namespace Inventory.Web.Controllers
             return View(item);
         }
 
-        // POST: Items/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

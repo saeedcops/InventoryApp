@@ -82,6 +82,23 @@ namespace Inventory.Infrastructure.Implementation
 
         }
 
-        
+        public async Task< bool> TakeOut(TakeOutParams TakeOutParams)
+        {
+            var items = await _dbContext.Items
+                .Where(x => x.Status == Status.STORE && x.CategoryId == TakeOutParams.Category.Id ).ToListAsync();
+
+            if (items==null || items.Count < TakeOutParams.Count)
+                return false;
+
+            for (int i = 0; i < TakeOutParams.Count; i++)
+            {
+                items[i].Status =(Status) (TakeOutParams.Status + 1);
+                items[i].BuyerId =TakeOutParams.Customer.Id;
+                items[i].BorrowerID =TakeOutParams.Employee.Id;
+                await _dbContext.SaveChangesAsync();
+
+            }
+            return true;
+        }
     }
 }

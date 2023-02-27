@@ -10,27 +10,30 @@
             <h4 >Items in store</h4>
 
             <h4>
-                @Html.Raw(ViewBag.Store)
 
             </h4>
+            @foreach (var item in ViewBag.Store)
+            {
+                <h4>@item.Key - @item.Value</h4>
+            }
         </div>
 
         <div class="col-4">
             <h4 >Items Sold</h4>
 
-            <h4>
-                @Html.Raw(ViewBag.Sold)
-
-            </h4>
+            @foreach (var item in ViewBag.Sold)
+            {
+                    <h4>@item.Key - @item.Value</h4>
+            }
         </div>
 
         <div class="col-4">
             <h4 >Items Borrowed</h4>
 
-            <h4>
-                @Html.Raw(ViewBag.Borrow)
-
-            </h4>
+            @foreach (var item in ViewBag.Borrow)
+            {
+                    <h4>@item.Key - @item.Value</h4>
+            }
         </div>
     </div>
 
