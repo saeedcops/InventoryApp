@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Inventory.Core.Entity;
-using Inventory.Web.Dtos;
 using Inventory.Core.Interfaces;
 using Inventory.Infrastructure.Data;
 using NToastNotify;
+using Inventory.Web.ViewModel;
 
 namespace Inventory.Web.Controllers
 {
@@ -65,7 +62,7 @@ namespace Inventory.Web.Controllers
         // POST: Items/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ItemDto item)
+        public async Task<IActionResult> Create(ItemViewModel item)
         {
             var itemToAdd = new Item {
                 Name = item.Name,Brand=item.Brand,

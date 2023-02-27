@@ -1,6 +1,6 @@
 ﻿using Inventory.Core.Entity;
 using Inventory.Core.Interfaces;
-using Inventory.Web.Dtos;
+using Inventory.Web.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventory.Web.Controllers
@@ -16,12 +16,12 @@ namespace Inventory.Web.Controllers
             _genericRepository = genericRepository;
         }
 
-        public async Task<ActionResult<List<ItemToReturnDto>>> SearchItems(string search)
+        public async Task<ActionResult<List<ItemToReturnViewModel>>> SearchItems(string search)
         {
             var items = await _genericRepository.GetAllSearchAsync(search);
 
             var itemToReturn = items.Select(x =>
-                    new ItemToReturnDto()
+                    new ItemToReturnViewModel()
                     {
                         Name = x.Name,
                         BorrowedDate = x.BorrowedDate != null ? x.BorrowedDate.ToString() : "NA",

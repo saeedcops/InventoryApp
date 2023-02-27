@@ -37,9 +37,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.BorrowedDate)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SoldDate)
-            </th>
+   
             <th>
                 @Html.DisplayNameFor(model => model.Status)
             </th>
@@ -70,13 +68,11 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Price)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StoredDate)
-            </td>
-            <td>
+
+                <td style="white-space: nowrap ;">
                 @Html.DisplayFor(modelItem => item.BorrowedDate)
             </td>
-            <td>
+                <td style="white-space: nowrap ;">
                 @Html.DisplayFor(modelItem => item.SoldDate)
             </td>
             <td>

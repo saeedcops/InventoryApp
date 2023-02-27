@@ -1,8 +1,8 @@
 ﻿using Inventory.Core.Entity;
 
-namespace Inventory.Web.Dtos
+namespace Inventory.Web.ViewModel
 {
-    public class ItemToReturnDto
+    public class ItemToReturnViewModel
     {
         public string Name { get; set; }
         public string Brand { get; set; }
